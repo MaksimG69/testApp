@@ -1,43 +1,58 @@
 package com.example.a3dtestapplication;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-	private TextView softwareVersion;
-	private String versionsNumber = "";
+	private TextView softwareVersionTextView;
+	private String versionsNumber = "Bla";
+	private Handler handler;
+	private Boolean hasChanged = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
-		try {
-			String name = TSSMBTSensor.getInstance().getSoftwareVersion();
-			softwareVersion.setText(name);
-		} catch (Exception e){
-			Log.println(Log.ERROR, "Main", "Cant get software version" + e.toString());
-		}
-		softwareVersion = findViewById(R.id.SoftwareVersion);
-		Button button = findViewById(R.id.VersionShit);
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				softwareVersion.setText(versionsNumber);
+		handler = new Handler(callback);
+//		try {
+//			String name = TSSMBTSensor.getInstance().getSoftwareVersion();
+//			softwareVersionTextView.setText(name);
+//		} catch (Exception e){
+//			Log.println(Log.ERROR, "Main", "Cant get software version" + e.toString());
+//
+//		}
+		softwareVersionTextView = findViewById(R.id.SoftwareVersion);
+		Button SWVersionButton = findViewById(R.id.VersionShit);
+		String nameForVersionButton = "Version";
+		SWVersionButton.setText(nameForVersionButton);
+		SWVersionButton.setOnClickListener(v -> {
+			try {
+				hasChanged = true;
+				versionsNumber = TSSMBTSensor.getInstance().getSoftwareVersion();
+				handler.sendEmptyMessage(0);
+				System.out.println("versionsNumber");
+				Log.println(Log.DEBUG, "Main", "Versions number is : " + versionsNumber);
+			} catch (Exception e){
+				Log.println(Log.ERROR, "Main", "Cant get software version" + e.toString());
+				Snackbar.make(v, "Cant set number, maybe not connected", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
 			}
 		});
 		FloatingActionButton fab = findViewById(R.id.fab);
@@ -48,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 					Snackbar.make(view, "is connected", Snackbar.LENGTH_LONG)
 							.setAction("Action", null).show();
 					versionsNumber = TSSMBTSensor.getInstance().getSoftwareVersion();
+					Log.println(Log.DEBUG, "Main second Version", "Version is: " + versionsNumber);
 				}
 			} catch (Exception e) {
 				Log.println(Log.DEBUG, "Main","Cant find device\n" + e.toString());
@@ -57,13 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
 		});
 
-		Button button1 = findViewById(R.id.toOpenGLActivity);
-		button1.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				openActivity();
-			}
-		});
+		Button startOpenGLButton = findViewById(R.id.toOpenGLActivity);
+		String startOpenGLActivity = "Load Open GL";
+		startOpenGLButton.setText(startOpenGLActivity);
+		startOpenGLButton.setOnClickListener(v -> openActivity());
+
 	}
 	private void openActivity(){
 		Intent intent = new Intent(this, OpenGL3DTestActivity.class);
@@ -92,5 +106,20 @@ public class MainActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void updateTextView(final String text){
+		MainActivity.this.runOnUiThread(() -> {
+			softwareVersionTextView = findViewById(R.id.SoftwareVersion);
+			this.softwareVersionTextView.setText("text");
+			this.softwareVersionTextView.invalidate();
+		});
+	}
 
+	Handler.Callback callback = new Handler.Callback() {
+		@Override
+		public boolean handleMessage(@NonNull Message msg) {
+			if(msg.what == 0)
+				softwareVersionTextView.setText(versionsNumber);
+			return true;
+		}
+	};
 }

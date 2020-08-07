@@ -128,7 +128,8 @@ public class OpenGLMesh {
 		indicesBuffer.position(0);
 		numOfIndices = indices.length;
 	}
-	// Dont understand this function..
+	// TODO Refactor
+	// Not used yet 
 	void setColor(float[] ambient, float[] diffuse, float[] specular, float shininess) {
 		// Setting the flat color.
 		ambient_color[0] = ambient[0]; ambient_color[1] = ambient[1]; ambient_color[2] = ambient[2]; ambient_color[3] = ambient[3];
