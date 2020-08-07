@@ -1,7 +1,6 @@
 package com.example.a3dtestapplication;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -21,9 +20,11 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 	private TextView softwareVersionTextView;
-	private String versionsNumber = "Bla";
+	private String versionsNumber = "";
 	private Handler handler;
 	private Boolean hasChanged = false;
+	final private String VERSION_STRING = "Version";
+	final private int VERSIONS_CHANGE = 101;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,15 +40,16 @@ public class MainActivity extends AppCompatActivity {
 //
 //		}
 		softwareVersionTextView = findViewById(R.id.SoftwareVersion);
+		softwareVersionTextView.setText(String.format("%s...", VERSION_STRING));
 		Button SWVersionButton = findViewById(R.id.VersionShit);
-		String nameForVersionButton = "Version";
+		String nameForVersionButton = VERSION_STRING;
 		SWVersionButton.setText(nameForVersionButton);
 		SWVersionButton.setOnClickListener(v -> {
 			try {
 				hasChanged = true;
 				versionsNumber = TSSMBTSensor.getInstance().getSoftwareVersion();
-				handler.sendEmptyMessage(0);
-				System.out.println("versionsNumber");
+				handler.sendEmptyMessage(VERSIONS_CHANGE);
+//				System.out.println("versionsNumber");
 				Log.println(Log.DEBUG, "Main", "Versions number is : " + versionsNumber);
 			} catch (Exception e){
 				Log.println(Log.ERROR, "Main", "Cant get software version" + e.toString());
@@ -117,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
 	Handler.Callback callback = new Handler.Callback() {
 		@Override
 		public boolean handleMessage(@NonNull Message msg) {
-			if(msg.what == 0)
-				softwareVersionTextView.setText(versionsNumber);
+			if(msg.what == VERSIONS_CHANGE)
+				softwareVersionTextView.setText(String.format("%s: %s", VERSION_STRING, versionsNumber));
 			return true;
 		}
 	};
