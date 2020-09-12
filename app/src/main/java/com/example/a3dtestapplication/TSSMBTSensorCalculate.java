@@ -21,20 +21,18 @@ final class TSSMBTSensorCalculate {
 	private TSSMBTSensorCalculate(){}
 
 	static float[] binaryToFloatCalc(byte[] b)	{
-		if (b.length % 4 != 0)
-		{
+		if (b.length % 4 != 0){
 			return new float[0];
 		}
 		float[] return_array = new float[b.length / 4];
 		int resultArrayCount = 0;
-		for (int i = 0; i < b.length; i += 4, ++resultArrayCount)
-		{
+		for (int i = 0; i < b.length; i += 4, ++resultArrayCount){
 			// count bits and calculate float
 			// TODO Try to replace '+' with '|' maybe faster
 			int binAsInt = (b[i + 3] & 255)
-					+ ((b[i + 2] & 255) << 8) // * 2⁸
-					+ ((b[i + 1] & 255) << 16) // * 2¹⁶
-					+ ((b[i] & 255) << 24); // * 2²⁴
+					+ ((b[i + 2] & 255) << 8) 	// * 2⁸
+					+ ((b[i + 1] & 255) << 16) 	// * 2¹⁶
+					+ ((b[i] & 255) << 24); 	// * 2²⁴
 
 			return_array[resultArrayCount] = Float.intBitsToFloat(binAsInt);
 		}
@@ -48,9 +46,11 @@ final class TSSMBTSensorCalculate {
 		floatBuffer.put(floats);
 		return buffer.array();
 	}
+
 	private static float square(float f){
 		return f*f;
 	}
+
 	static boolean quaternionCheck(@NotNull float[] orientation){
 		if (orientation.length != 4)
 			return false;
@@ -60,15 +60,16 @@ final class TSSMBTSensorCalculate {
 		return abs(1 - length) < 1f;
 	}
 
-
 	static float[] unit_matrix = new float[]{  1,0,0,0,
 			0,1,0,0,
 			0,0,1,0,
 			0,0,0,1};
+
 	static float[] rot90degZ = new float[]{  0,-1,0,0,
 			1,0,0,0,
 			0,0,1,0,
 			0,0,0,1};
+
 	static float[] rotMatrixY (double angel){
 		// init
 		float[] rotMatrix = new float[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.0f};
@@ -83,6 +84,7 @@ final class TSSMBTSensorCalculate {
 		return rotMatrix;
 
 	}
+
 	static float[] rotMatrixZ(double angel){
 		//init
 		float[] rotMatrix = new float[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.0f};

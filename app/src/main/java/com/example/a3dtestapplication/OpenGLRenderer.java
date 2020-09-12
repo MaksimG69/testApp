@@ -16,6 +16,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 	private boolean change = false;
 
 	public void setChange(boolean bool){this.change = bool;}
+
 	public float[] getRgbColor() {
 		return rgbColor;
 	}
@@ -95,7 +96,7 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
 		//Draw the root
 		if (change) {
-			Log.d("Draw", "ich will farbe ändern");
+			Log.d("Draw", "i will change the color");
 			gl.glClearColor(rgbColor[0],rgbColor[1],rgbColor[2], rgbColor[3]);
 
 			change = false;
@@ -104,6 +105,5 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
 
 		// Restore to the matrix as it was before.
 		gl.glPopMatrix();
-
 	}
 }

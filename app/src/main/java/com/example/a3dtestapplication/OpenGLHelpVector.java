@@ -1,8 +1,7 @@
 package com.example.a3dtestapplication;
-
-
-import android.graphics.Path;
-
+/**
+ * This is a helper class for calculate and manage the coordinates.
+ * */
 public class OpenGLHelpVector {
 	private float[] elements = {0,0,0};
 
@@ -88,18 +87,7 @@ public class OpenGLHelpVector {
 		}
 
 	}
-/*
-	public void normalize()
-	{
-		float length = getVectorLength();
-		if (length > 0.0f)
-		{
-			elements[0] /= length;
-			elements[1] /= length;
-			elements[2] /= length;
-		}
-	}
-*/
+
 	OpenGLHelpVector normalizeVectorCopy(){
 		OpenGLHelpVector vector = new OpenGLHelpVector(getX(), getY(), getZ());
 		vector.normalizeVector();
@@ -119,7 +107,7 @@ public class OpenGLHelpVector {
 		return vector;
 	}
 
-	public float dot(OpenGLHelpVector other)
+	float dot(OpenGLHelpVector other)
 	{
 		return getX() * other.getX() + getY() * other.getY() + getZ() * other.getZ();
 	}

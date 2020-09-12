@@ -32,9 +32,10 @@ public class OpenGL3DTestActivity extends AppCompatActivity {
 		change.setText(bname);
 		renderer = new OpenGLRenderer();
 		change.setOnClickListener(v -> {
-			if(changer < 3)
-				changer += 1;
-			else changer = 1;
+			changer = (changer < 3) ? ++changer : 1;
+//			if(changer < 3)
+//				changer += 1;
+//			else changer = 1;
 //			changer = 2;
 			Log.d("Changer", String.valueOf(changer));
 //			Message message = new Message();
@@ -54,7 +55,7 @@ public class OpenGL3DTestActivity extends AppCompatActivity {
 		cameraNode.setTransformZ(-12.0f);
 		cameraNode.setTransformX(0.0f);
 		cameraNode.setTransformY(-2.5f);
-
+		// after root, can add a lot of nodes f.e. arrows
 		renderer.getRoot().addChild(cameraNode);
 		OpenGLTransformerNode sensorOrientation = new OpenGLTransformerNode();
 		cameraNode.addChild(sensorOrientation);

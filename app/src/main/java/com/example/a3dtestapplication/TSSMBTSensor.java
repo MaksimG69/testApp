@@ -25,9 +25,10 @@ class TSSMBTSensor {
 	private ReentrantLock call_lock;
 	private boolean isConnected, isStreaming;
 	private float[] lastPacket = new float[]{0,0,0,1};
-	private static TSSMBTSensor instance;
+	private static TSSMBTSensor instance = null;
 	private Vector<Byte> unparsedStreamData = new Vector<>();
 
+	// TODO design new exception to throw
 	TSSMBTSensor() throws Exception {
 		Log.println(Log.DEBUG, "Sensor", "Sensor is started name");
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
@@ -40,6 +41,7 @@ class TSSMBTSensor {
 			for(BluetoothDevice device : pairedDevices){
 				String deviceName = device.getName();
 				Log.println(Log.DEBUG, "Sensor", "Device name:"+ deviceName);
+				// TODO reformat
 				if(deviceName.contains("YostLabsMBT")) {
 					server_mac = device.getAddress();
 					break;
@@ -89,8 +91,9 @@ class TSSMBTSensor {
 		}
 		return response;
 	}
+
 	// Close connection
-	void close()  {
+	void close() {
 		try {
 			btSocket.close();
 		} catch (IOException e) {
@@ -125,17 +128,18 @@ class TSSMBTSensor {
 			Log.println(Log.ERROR, "Sensor", "Error in write header \n" + e.toString());
 		}
 	}
+
 	void startStreaming(){
 		call_lock.lock();
 
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.putInt(0x48);
 		byte[] header = buffer.array();
-		// copy from 3Space app
+		// copy from app
 		byte[] dataToSend = new byte[]{(byte)0xdd,header[0],header[1],header[2],header[3]};
 		write(dataToSend);
 
-		// Befehl der an den sensor gesendet wird und 255 (kein befehl)
+		// Send command to sensor, 255 is nothing
 		dataToSend = new byte[]{(byte)0x50,(byte)0,(byte)255,(byte)255,(byte)255,(byte)255,(byte)255,(byte)255,(byte)255};
 		write(dataToSend);
 
@@ -176,8 +180,10 @@ class TSSMBTSensor {
 		isStreaming = false;
 		call_lock.unlock();
 	}
+
 	boolean IsConnected() {return isConnected;}
 	boolean isStreaming() {return isStreaming;}
+
 	String getSoftwareVersion(){
 		Log.println(Log.DEBUG, "Sensor", "Getting software version");
 		if(isStreaming){
@@ -200,9 +206,7 @@ class TSSMBTSensor {
 	}
 
 	static TSSMBTSensor getInstance() throws Exception {
-		if(instance == null)
-			instance = new TSSMBTSensor();
-		return instance;
+		return (instance == null) ? instance = new TSSMBTSensor() : instance;
 	}
 
 	void getTaredMatrix(){
@@ -219,7 +223,7 @@ class TSSMBTSensor {
 		// Check if sensor is streaming
 		if (isStreaming){
 			try {
-				// TODO Check why 18
+				// TODO Check and test this function (change magic number  18)
 				if (unparsedStreamData.size() + BTInputStream.available() < 18){
 					return lastPacket;
 				}
@@ -233,7 +237,7 @@ class TSSMBTSensor {
 					Log.d("Filter", "response: " + response);
 					unparsedStreamData.add(response);
 				}
-				// TODO why 18
+				// REFOPRMAT Change magic number 18
 				int location = unparsedStreamData.size() - 18;
 				Log.d("Filter", "Location -18: " + location);
 				while (location > 0){
